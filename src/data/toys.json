@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Llama in a green box",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-1.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-1-h.png"
+  },
+  {
+    "name": "Evoker",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-7.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-7-h.png"
+  },
+  {
+    "name": "Dawn in a yellow box",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-4.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-4-h.png"
+  },
+  {
+    "name": "Skeleton",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-8.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-8-h.png"
+  },
+  {
+    "name": "Garret in a gray box",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-2.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-2-h.png"
+  },
+  {
+    "name": "Creeper",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-9.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-9-h.png"
+  },
+  {
+    "name": "Steve in a blue box",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-5.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-5-h.png"
+  },
+  {
+    "name": "Pink Sheep",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-11.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-11-h.png"
+  },
+  {
+    "name": "Creeper in a red box",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-3.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-3-h.png"
+  },
+  {
+    "name": "Bee",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-10.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-10-h.png"
+  },
+  {
+    "name": "Pink Sheep in a pink box",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-6.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-6-h.png"
+  },
+  {
+    "name": "Wolf",
+    "idleUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-12.png",
+    "hoverUrl": "https://www.happymeal.com/wp-content/uploads/2025/03/toy-12-h.png"
+  }
+]
