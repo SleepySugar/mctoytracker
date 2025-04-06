@@ -19,6 +19,7 @@ interface MapComponentProps {
   locations: Location[];
   setSelectedLocation: React.Dispatch<React.SetStateAction<Location | null>>;
   selectedToy: string | null;
+  isSidebarOpen: boolean;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
@@ -26,6 +27,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   locations,
   setSelectedLocation,
   selectedToy,
+  isSidebarOpen,
 }) => {
   const [hoveredLocation, setHoveredLocation] = useState<Location | null>(null);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -92,7 +94,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
               click: () => setSelectedLocation(location),
             }}
           >
-            {hoveredLocation?.placeId === location.placeId && (
+            {/* Only show the popup when the sidebar is not open */}
+            {!isSidebarOpen && hoveredLocation?.placeId === location.placeId && (
               <Popup offset={[0, -40]}>
                 <div className="p-2">
                   <h2 className="text-lg font-semibold text-mcBlack">{location.name}</h2>
