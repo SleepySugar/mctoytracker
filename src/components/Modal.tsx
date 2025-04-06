@@ -27,12 +27,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
   return ReactDOM.createPortal(
     <FocusTrap>
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        onClick={onClose}
-        aria-modal="true"
-        role="dialog"
-      >
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1100]"
+          onClick={onClose}
+          aria-modal="true"
+          role="dialog"
+        >
         <div
           className="bg-mcWhite p-6 rounded-lg max-w-md w-full relative"
           onClick={(e) => e.stopPropagation()}
