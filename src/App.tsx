@@ -165,6 +165,7 @@ const App: React.FC = () => {
               setIsSidebarOpen(true);
             }}
             selectedToy={selectedToy}
+            isSidebarOpen={isSidebarOpen}
           />
         </div>
 
