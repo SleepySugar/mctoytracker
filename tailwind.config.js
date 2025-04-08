@@ -6,8 +6,8 @@ module.exports = {
     extend: {
       colors: {
         mcRed: {
-          light: '#FF6F61',
-          DEFAULT: '#D88C8C',
+          light: '#D88C8C',
+          DEFAULT: '#FF6F61',
           dark: '#A51E15',
         },
         mcYellow: {
