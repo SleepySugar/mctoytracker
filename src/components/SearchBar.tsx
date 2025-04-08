@@ -25,7 +25,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       />
       <button
         type="submit"
-        className="px-4 py-2 bg-mcRed hover:bg-mcRed-dark text-mcWhite font-semibold rounded-r transition"
+        className="px-4 py-2 bg-mcRed hover:bg-mcRed-dark text-mcCreme font-semibold rounded-r transition"
       >
         Search
       </button>

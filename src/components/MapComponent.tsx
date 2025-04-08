@@ -110,7 +110,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
       {/* Fullscreen Button */}
       <button
-        className="absolute top-2 right-2 z-10 bg-mcWhite text-mcBlack p-2 rounded shadow hover:bg-mcGray-light transition duration-300"
+        className="absolute top-2 right-2 z-10 bg-mcCreme text-mcBlack p-2 rounded shadow hover:bg-mcGray-light transition duration-300"
         onClick={toggleFullscreen}
         aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
       >

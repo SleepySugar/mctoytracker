@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-mcWhite shadow-lg z-[1000] transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-80 bg-mcCreme shadow-lg z-[1000] transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -149,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-mcRed hover:bg-mcRed-dark text-mcWhite rounded"
+            className="px-4 py-2 bg-mcRed hover:bg-mcRed-dark text-mcCreme rounded"
             onClick={handleSaveToys}
           >
             Save

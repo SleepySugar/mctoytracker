@@ -114,7 +114,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-mcWhite-off">
+    <div className="relative flex flex-col min-h-screen bg-mcCreme-off">
       <header className="bg-mcRed text-mcYellow p-4 flex items-center justify-center relative">
         <h1 className="text-4xl font-bold text-center">McToyTracker</h1>
         <button

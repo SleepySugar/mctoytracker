@@ -34,7 +34,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
           role="dialog"
         >
         <div
-          className="bg-mcWhite p-6 rounded-lg max-w-md w-full relative"
+          className="bg-mcCreme p-6 rounded-lg max-w-md w-full relative"
           onClick={(e) => e.stopPropagation()}
         >
           {children}

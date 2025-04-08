@@ -7,24 +7,24 @@ module.exports = {
       colors: {
         mcRed: {
           light: '#FF6F61',
-          DEFAULT: '#DA291C',
+          DEFAULT: '#D88C8C',
           dark: '#A51E15',
         },
         mcYellow: {
           light: '#FFE082',
-          DEFAULT: '#FFC72C',
+          DEFAULT: '#F6E27F',
           dark: '#E0A800',
         },
         mcBlack: {
           DEFAULT: '#2D2926',
         },
-        mcWhite: {
-          DEFAULT: '#FFFFFF',
+        mcCreme: {
+          DEFAULT: '#EADDCA',
           off: '#FAF9F6'
         },
         mcGray: {
-          light: '#F5F5F5',
-          DEFAULT: '#9E9E9E',
+          light: '#6e6e6e',
+          DEFAULT: '4b4b4b',
           dark: '#616161',
         }
       },
