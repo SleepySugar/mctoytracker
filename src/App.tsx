@@ -1,148 +1,80 @@
-// src/App.tsx
-
 import React, { useState, useEffect } from 'react';
+import { collection, onSnapshot, doc, updateDoc, setDoc } from 'firebase/firestore';
+import { db } from './firebase';
 import MapComponent from './components/MapComponent';
 import SearchBar from './components/SearchBar';
 import ToyRoster from './components/ToyRoster';
-import { Location } from './data/locations';
 import Sidebar from './components/Sidebar';
+import { Location } from './data/locations';
 import 'leaflet/dist/leaflet.css';
 
 const App: React.FC = () => {
-  const [center, setCenter] = useState<{ lat: number; lng: number }>({ lat: 40.7580, lng: -73.9855 }); // Default: Times Square
+  const [center, setCenter] = useState({ lat: 40.758, lng: -73.9855 });
   const [locations, setLocations] = useState<Location[]>([]);
   const [searchAddress, setSearchAddress] = useState<string | null>(null);
   const [selectedToy, setSelectedToy] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Fetch initial locations from the server (if you have a backend for toy data)
+  // Real‑time Firestore listener
   useEffect(() => {
-    fetch('/api/locations')
-      .then((response) => response.json())
-      .then((data) => {
-        setLocations(data);
-        if (data.length > 0) {
-          const avgLat = data.reduce((sum, loc) => sum + loc.coordinates.lat, 0) / data.length;
-          const avgLng = data.reduce((sum, loc) => sum + loc.coordinates.lng, 0) / data.length;
-          setCenter({ lat: avgLat, lng: avgLng });
-        }
-      })
-      .catch((error) => console.error('Error fetching initial locations:', error));
+    const unsub = onSnapshot(collection(db, 'locations'), (snap) => {
+      const list = snap.docs.map((d) => ({ ...d.data(), placeId: d.id })) as Location[];
+      setLocations(list);
+      if (list.length) {
+        const avgLat = list.reduce((s, l) => s + l.coordinates.lat, 0) / list.length;
+        const avgLng = list.reduce((s, l) => s + l.coordinates.lng, 0) / list.length;
+        setCenter({ lat: avgLat, lng: avgLng });
+      }
+    });
+    return () => unsub();
   }, []);
 
-  // Fetch nearby McDonald's using Overpass API
-  const fetchNearbyLocations = (lat: number, lng: number) => {
-    const overpassQuery = `
-      [out:json];
-      node["amenity"="fast_food"]["name"~"McDonald's"](around:5000,${lat},${lng});
-      out body;
-    `;
-    const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
-
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        const newLocations: Location[] = data.elements.map((node: any) => ({
-          id: node.id.toString(),
-          name: node.tags.name || "McDonald's",
-          coordinates: {
-            lat: node.lat,
-            lng: node.lon,
-          },
-          address: node.tags["addr:street"]
-            ? `${node.tags["addr:street"]}, ${node.tags["addr:city"] || ''} ${node.tags["addr:postcode"] || ''}`
-            : 'Address not available',
-          rating: 0, // Overpass doesn't provide ratings; you could fetch this elsewhere or omit
-          placeId: node.id.toString(), // Using OSM node ID as a unique identifier
-          toys: [], // Default empty; merge with existing data if available
-        }));
-
-        setLocations((prevLocations) => {
-          const locationMap = new Map<string, Location>();
-          prevLocations.forEach((loc) => locationMap.set(loc.placeId, loc));
-          newLocations.forEach((newLoc) => {
-            const existingLoc = locationMap.get(newLoc.placeId);
-            locationMap.set(newLoc.placeId, existingLoc ? { ...newLoc, toys: existingLoc.toys } : newLoc);
-          });
-          const updatedLocations = Array.from(locationMap.values());
-
-          // Optionally save to your backend
-          fetch('/api/locations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedLocations),
-          }).catch((error) => console.error('Error saving locations:', error));
-
-          return updatedLocations;
-        });
-      })
-      .catch((error) => console.error('Error fetching Overpass data:', error));
+  const updateLocationToys = async (placeId: string, toys: string[]) => {
+    await updateDoc(doc(db, 'locations', placeId), { toys });
   };
 
-  // Handle search with Nominatim geocoding
+  const addOrUpdateLocation = async (loc: Location) => {
+    await setDoc(doc(db, 'locations', loc.placeId), loc, { merge: true });
+  };
+
+  // Geocode + Overpass
   useEffect(() => {
     if (!searchAddress) return;
-
     fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchAddress)}&format=json&limit=1`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data[0]) {
-          const newCenter = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-          setCenter(newCenter);
-          fetchNearbyLocations(newCenter.lat, newCenter.lng);
-        } else {
-          alert('Could not find the address.');
-        }
+      .then((r) => r.json())
+      .then(async (d) => {
+        if (!d[0]) return alert('Address not found');
+        const newCenter = { lat: +d[0].lat, lng: +d[0].lon };
+        setCenter(newCenter);
+
+        const query = `[out:json];node["amenity"="fast_food"]["name"~"McDonald's"](around:5000,${newCenter.lat},${newCenter.lng});out body;`;
+        const url   = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+        const data  = await fetch(url).then((x) => x.json());
+
+        data.elements.forEach((n: any) => {
+          const loc: Location = {
+            id: n.id.toString(),
+            name: n.tags.name || "McDonald's",
+            coordinates: { lat: n.lat, lng: n.lon },
+            address: n.tags['addr:street']
+              ? `${n.tags['addr:street']}, ${n.tags['addr:city'] || ''} ${n.tags['addr:postcode'] || ''}`
+              : 'Address not available',
+            placeId: n.id.toString(),
+            toys: [],
+          };
+          addOrUpdateLocation(loc);
+        });
       })
-      .catch((error) => console.error('Geocoding error:', error));
+      .catch(console.error);
   }, [searchAddress]);
-
-  const handleSearch = (address: string) => {
-    setSearchAddress(address);
-  };
-
-  const updateLocationToys = (placeId: string, toys: string[]) => {
-    setLocations((prevLocations) =>
-      prevLocations.map((loc) => (loc.placeId === placeId ? { ...loc, toys } : loc))
-    );
-    fetch(`/api/locations/${placeId}/toys`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ toys }),
-    }).catch((error) => console.error('Error updating toys:', error));
-  };
 
   return (
     <div className="relative flex flex-col min-h-screen bg-mcCreme-off">
       <header className="bg-mcRed text-mcYellow p-4 flex items-center justify-center relative">
-        <h1 className="text-4xl font-bold text-center">McToyTracker</h1>
-        <button
-          className="absolute md:hidden"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          aria-label={isSidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
-        >
-          {isSidebarOpen ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
+        <h1 className="text-4xl font-bold">McToyTracker</h1>
+        <button className="absolute md:hidden" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          {isSidebarOpen ? '✕' : '☰'}
         </button>
       </header>
 
@@ -151,7 +83,7 @@ const App: React.FC = () => {
           Find the toy you want („• ֊ •„)
         </h2>
         <div className="flex justify-center mb-4">
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={setSearchAddress} />
         </div>
       </section>
 
@@ -160,10 +92,7 @@ const App: React.FC = () => {
           <MapComponent
             center={center}
             locations={locations}
-            setSelectedLocation={(location) => {
-              setSelectedLocation(location);
-              setIsSidebarOpen(true);
-            }}
+            setSelectedLocation={(l) => { setSelectedLocation(l); setIsSidebarOpen(true); }}
             selectedToy={selectedToy}
             isSidebarOpen={isSidebarOpen}
           />
@@ -178,10 +107,7 @@ const App: React.FC = () => {
       {isSidebarOpen && selectedLocation && (
         <Sidebar
           location={selectedLocation}
-          onClose={() => {
-            setSelectedLocation(null);
-            setIsSidebarOpen(false);
-          }}
+          onClose={() => { setSelectedLocation(null); setIsSidebarOpen(false); }}
           updateLocationToys={updateLocationToys}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
